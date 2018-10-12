@@ -2,6 +2,7 @@
 
 dependency:
   name: galaxy
+  requirements_file: requirements.yml
 driver:
   name: docker
 lint:
@@ -10,23 +11,47 @@ lint:
     config-file: molecule/default/yaml-lint.yml
 platforms:
   - name: instance-1
+    image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
+    command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
+    pre_build_image: true
     groups:
       - common
+      - cm
   - name: instance-2
+    image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
+    command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
+    pre_build_image: true
     groups:
       - common
+      - dcd
   - name: instance-3
+    image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
+    command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
+    pre_build_image: true
     groups:
       - common
+      - dcd
   - name: instance-4
+    image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
+    command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
+    pre_build_image: true
     groups:
       - common
+      - dcd
   - name: instance-5
+    image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
+    command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
+    pre_build_image: true
     groups:
       - common
+      - dcd
   - name: instance-6
+    image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
+    command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
+    pre_build_image: true
     groups:
       - common
+      - dcd
 provisioner:
   name: ansible
   config_options:
@@ -35,15 +60,31 @@ provisioner:
       host_key_checking: false
   inventory:
     group_vars:
-      bigiq_onboard_user: ${F5_USER:-admin}
-        bigiq_onboard_password: ${F5_PASSWORD:-secret}
-        bigiq_onboard_license_key: ${BIGIQ_ONBOARD_LICENSE_KEY}
-        bigiq_onboard_master_passphrase: ${BIGIQ_ONBOARD_MASTER_PASSPHRASE:-Change!Me!Now!1234}
-        bigiq_onboard_node_type: ${BIGIQ_ONBOARD_NODE_TYPE:-cm}
-        bigiq_onboard_force: ${BIGIQ_ONBOARD_FORCE:-false}
-        bigiq_onboard_set_basic_auth: ${BIGIQ_ONBOARD_SET_BASIC_AUTH:-false}
-    instance:
-        bigiq_onboard_server: ${F5_SERVER:-localhost}
+      common:
+        register_dcd_cm_user: ${F5_CM_USER:-admin}
+        register_dcd_cm_password: ${F5_CM_PASSWORD:-secret}
+        register_dcd_cm_server_port: ${F5_CM_SERVER_PORT:-443}
+        register_dcd_cm_validate_certs: ${F5_CM_VALIDATE_CERTS:-false}
+        register_dcd_cm_server: ${F5_CM_DEVICE:-localhost}
+        register_dcd_dcd_user: ${F5_DCD_USER:-admin}
+        register_dcd_dcd_password: ${F5_DCD_PASSWORD:-secret}
+      cm:
+        bigiq_onboard_node_type: cm
+      dcd:
+        bigiq_onboard_node_type: dcd
+    host_vars:
+      instance-1:
+        bigiq_onboard_server: ${F5_SERVER_1:-localhost}
+      instance-2:
+        bigiq_onboard_server: ${F5_SERVER_2:-localhost}
+      instance-3:
+        bigiq_onboard_server: ${F5_SERVER_3:-localhost}
+      instance-4:
+        bigiq_onboard_server: ${F5_SERVER_4:-localhost}
+      instance-5:
+        bigiq_onboard_server: ${F5_SERVER_5:-localhost}
+      instance-6:
+        bigiq_onboard_server: ${F5_SERVER_6:-localhost}
   env:
     ANSIBLE_ROLES_PATH: ../../../
   lint:
@@ -51,7 +92,7 @@ provisioner:
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
 scenario:
-  name: integration
+  name: multi-node
 verifier:
   name: testinfra
   lint:

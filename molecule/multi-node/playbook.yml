@@ -1,7 +1,36 @@
 ---
 
-- name: Converge
-  hosts: all
+# - name: Onboard all devices
+#   hosts: all
+#   roles:
+#     - role: bigiq-onboard
 
-  roles:
-    - role: bigiq-onboard
+# - name: Add DCD devices to CM device concurrently
+#   hosts: dcd
+#   vars:
+#     register_dcd_dcd_user: "{{ provider.user }}"
+#     register_dcd_dcd_password: "{{ provider.password }}"
+#     register_dcd_dcd_server: "{{ ansible_host }}"
+#     register_dcd_cm_server: "{{ hostvars[cm].provider.server }}"
+#     register_dcd_cm_server_port: "{{ hostvars[cm].provider.server_port }}"
+#     register_dcd_cm_user: "{{ hostvars[cm].provider.user }}"
+#     register_dcd_cm_password: "{{ hostvars[cm].provider.password }}"
+#     register_dcd_cm_validate_certs: "{{ hostvars[cm].provider.validate_certs }}"
+#     register_dcd_cm_transport: "{{ hostvars[cm].provider.transport }}"
+#     register_dcd_cm_timeout: "{{ hostvars[cm].provider.timeout }}"
+#   tasks:
+#     - name: Add DCD to CM
+#       include_role:
+#         name: ansible-role-register_dcd
+#       vars:
+#         cm: "{{ groups['cm'][0] }}"
+
+- name: Add DCD devices to CM device serially
+  hosts: cm
+  tasks:
+    - name: Add DCD to CM
+      include_role:
+        name: ansible-role-register_dcd
+      vars:
+        register_dcd_dcd_server: "{{ hostvars[item].bigiq_onboard_server }}"
+      loop: "{{ groups['dcd'] }}"
