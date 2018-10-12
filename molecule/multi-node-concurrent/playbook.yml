@@ -3,7 +3,7 @@
 - name: Onboard all devices
   hosts: all
   roles:
-    - role: bigiq-onboard
+    - role: f5devcentral.bigiq_onboard
 
 - name: Add DCD devices to CM device concurrently
   hosts: dcd
