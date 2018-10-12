@@ -1,0 +1,36 @@
+---
+
+- name: De-activate DoS Protection service
+  uri:
+    url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/security-shared/tasks/remove-dos-listener"
+    timeout: "{{ register_dcd_cm_timeout }}"
+    validate_certs: "{{ register_dcd_cm_validate_certs }}"
+    method: POST
+    body:
+      module: dos
+      deviceReference:
+        link: "shared/resolver/device-groups/cm-dosevents-allLoggingNodes/devices/{{ device_id }}"
+    body_format: json
+    headers:
+      X-F5-Auth-Token: "{{ f5_auth_token }}"
+    status_code: 200,202
+  register: r
+  changed_when: r.status in [200, 202]
+
+- name: Wait for DoS Protection service de-activation to complete
+  uri:
+    url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/websafe/tasks/remove-listener/{{ r.json.id }}"
+    timeout: "{{ register_dcd_cm_timeout }}"
+    validate_certs: "{{ register_dcd_cm_validate_certs }}"
+    headers:
+      X-F5-Auth-Token: "{{ f5_auth_token }}"
+  register: result
+  changed_when: result.status == 200
+  retries: 120
+  until: result.json.status in ['FINISHED', 'FAILED']
+  delay: 2
+
+- name: Fail if DoS Protection service de-activation failed
+  fail:
+    msg: "DoS Protection service de-activation failed with: {{ result.json.errorMessage }}"
+  when: result.json.status == 'FAILED'
