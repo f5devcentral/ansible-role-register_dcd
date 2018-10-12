@@ -1,0 +1,37 @@
+---
+
+- name: Activate Access service
+  uri:
+    url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/access/event-logs/listener/add-listener-task"
+    timeout: "{{ register_dcd_cm_timeout }}"
+    validate_certs: "{{ register_dcd_cm_validate_certs }}"
+    method: POST
+    body:
+      module: access
+      listenerInterfaceAddress: "{{ register_dcd_dcd_listener }}"
+      deviceReference:
+        link: "{{ device_ref }}"
+    body_format: json
+    headers:
+      X-F5-Auth-Token: "{{ f5_auth_token }}"
+    status_code: 200,202
+  register: r
+  changed_when: r.status in [200, 202]
+
+- name: Wait for service activation to complete
+  uri:
+    url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/access/event-logs/listener/add-listener-task/{{ r.json.id }}"
+    timeout: "{{ register_dcd_cm_timeout }}"
+    validate_certs: "{{ register_dcd_cm_validate_certs }}"
+    headers:
+      X-F5-Auth-Token: "{{ f5_auth_token }}"
+  register: result
+  changed_when: result.status == 200
+  retries: 120
+  until: result.json.status in ['FINISHED', 'FAILED']
+  delay: 2
+
+- name: Fail if service activation failed
+  fail:
+    msg: "Service activation failed with: {{ r.json.errorMessage }}"
+  when: result.json.status == 'FAILED'
