@@ -1,6 +1,6 @@
 ---
 
-- name: Activate Access service
+- name: Activate Web Application Security service
   uri:
     url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/asm/tasks/add-syslog-listener"
     timeout: "{{ register_dcd_cm_timeout }}"
@@ -19,7 +19,7 @@
   register: r
   changed_when: r.status in [200, 202]
 
-- name: Wait for service activation to complete
+- name: Wait for Web Application Security service activation to complete
   uri:
     url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/asm/tasks/add-syslog-listener/{{ r.json.id }}"
     timeout: "{{ register_dcd_cm_timeout }}"
@@ -32,7 +32,7 @@
   until: result.json.status in ['FINISHED', 'FAILED']
   delay: 2
 
-- name: Fail if service activation failed
+- name: Fail if Web Application Security service activation failed
   fail:
-    msg: "Service activation failed with: {{ r.json.errorMessage }}"
+    msg: "Web Application Security service activation failed with: {{ result.json.errorMessage }}"
   when: result.json.status == 'FAILED'

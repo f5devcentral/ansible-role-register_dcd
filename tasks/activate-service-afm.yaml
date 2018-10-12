@@ -1,6 +1,6 @@
 ---
 
-- name: Activate Access service
+- name: Activate Network Security service
   uri:
     url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/firewall/tasks/add-afm-listener"
     timeout: "{{ register_dcd_cm_timeout }}"
@@ -18,7 +18,7 @@
   register: r
   changed_when: r.status in [200, 202]
 
-- name: Wait for service activation to complete
+- name: Wait for Network Security service activation to complete
   uri:
     url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/firewall/tasks/add-afm-listener/{{ r.json.id }}"
     timeout: "{{ register_dcd_cm_timeout }}"
@@ -31,7 +31,7 @@
   until: result.json.status in ['FINISHED', 'FAILED']
   delay: 2
 
-- name: Fail if service activation failed
+- name: Fail if Network Security service activation failed
   fail:
-    msg: "Service activation failed with: {{ r.json.errorMessage }}"
+    msg: "Network Security service activation failed with: {{ result.json.errorMessage }}"
   when: result.json.status == 'FAILED'
