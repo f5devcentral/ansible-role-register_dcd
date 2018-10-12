@@ -1,7 +1,7 @@
-# Ansible Role: BIG-IQ Onboard
+# Ansible Role: BIG-IQ Register DCD
 
-Performs a basic series of on-boarding steps to bootstrap a BIG-IQ system
-to the point that it can accept configuration.
+Performs a series of steps needed to register a BIG-IQ provisioned as a Data Collection
+Device (DCD) to a BIG-IQ provisioned as a Configuration Management (CM) device.
 
 ## Requirements
 
@@ -11,76 +11,29 @@ None.
 
 Available variables are listed below. For their default values, see `defaults/main.yml`:
 
-    bigiq_onboard_server: localhost
-    bigiq_onboard_server_port: 443
-    bigiq_onboard_user: admin
-    bigiq_onboard_password: secret
-    bigiq_onboard_validate_certs: no
-    bigiq_onboard_transport: rest
-    bigiq_onboard_timeout: 120
+    register_dcd_cm_server: localhost
+    register_dcd_cm_server_port: 443
+    register_dcd_cm_user: admin
+    register_dcd_cm_password: secret
+    register_dcd_cm_validate_certs: false
+    register_dcd_cm_transport: rest
+    register_dcd_cm_timeout: 120
 
 Establishes initial connection to your BIG-IQ. These values are substituted into
-your ``provider`` module parameter.
+your ``provider`` module parameter. These values should be the connection parameters
+for the **CM BIG-IP** device.
 
-    bigiq_onboard_new_root_password:
-    bigiq_onboard_old_root_password: default
-    bigiq_onboard_new_admin_password:
-    bigiq_onboard_old_admin_password: admin
+    register_dcd_dcd_user: admin
+    
+Username to use when logging in to the DCD device. This value is sent to the CM device
+during DCD node registration. The CM needs to communicate with the DCD device to register
+it. This credential is required to do that.
 
-Parameters used to change the default admin and root accounts on the BIG-IQ during
-onboarding. If you do not want to change the passwords, leave the ``new`` variables
-empty.
+    register_dcd_dcd_password: secret
 
-    bigiq_onboard_node_type: cm
-
-Control the type of the BIG-IQ node. There are two types; ``cm`` and ``dcd``. If you
-do not specify a type, the default will be ``cm``.
-
-    bigiq_onboard_master_passphrase:
-
-Sets the master password for the BIG-IQ. This value is used for encryption/decryption
-of fields that BIG-IQ uses. This must meet certain complexity requirements before
-BIG-IQ will accept it; 16 characters long, and must contain at least one uppercase
-letter, lower case letter, number, and special character.
-
-    bigiq_onboard_dns_nameservers:
-      - 8.8.8.8
-
-DNS servers that the BIG-IQ will use for name resolution
-
-    bigiq_onboard_dns_search:
-      - localhost
-
-DNS search domains
-
-    bigiq_onboard_ntp_servers:
-      - time.nist.gov
-
-NTP configuration
-
-    bigiq_onboard_timezone: America/Los_Angeles
-
-The timezone to set on the BIG-IQ device. This timezone should be specified in the
-"TZ" format as seen [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-
-    bigiq_onboard_license_key:
-
-License key to use to license the BIG-IQ device. If you do not wish to license your
-device, leave this field empty.
-
-    bigiq_onboard_hostname: foo.bar.com
-
-Specifies the hostname of the BIG-IQ device. By default, this setting is commented out.
-This means that the BIG-IQ will default to a generic hostname. By specifying this value
-to the role, you can override this default generic
-
-    bigiq_onboard_discovery_address: 1.2.3.4/32
-
-Specifies a custom discovery address to create. The address will be created as a Self IP
-and then the Self IP will be assigned as the discovery address. Specifying an address
-will also enforce the creation of a default VLAN named 'internal'.
-
-This IP Address **must** include the subnet in CIDR form, as shown in the example above.
+Password of the user used to connect to DCD device. This value is sent to the CM device
+during DCD node registration. The CM needs to communicate with the DCD device to register
+it. This credential is required to do that.
 
 ## Dependencies
 
@@ -88,28 +41,17 @@ None.
 
 ## Example Playbook
 
-    - name: Set up a CM BIG-IQ
-      hosts: bigiq
+    - name: Register DCD to CM BIG-IQ
+      hosts: dcds
       vars_files:
         - vars/main.yml
       roles:
-        - { role: f5devcentral.bigiq_onboard }
+        - { role: f5devcentral.register_dcd }
 
 *Inside `vars/main.yml`*:
 
-    bigiq_onboard_server: bigiq01.domain.org
-    bigiq_onboard_password: secret
-    bigiq_onboard_new_root_password: New_Admin_Secret123
-    bigiq_onboard_old_root_password: default
-    bigiq_onboard_new_admin_password: New_Root_Secret123
-    bigiq_onboard_old_admin_password: admin
-    bigiq_onboard_master_passphrase: M@sterPassphrase1234
-    bigiq_onboard_dns_nameservers:
-      - 10.10.10.10
-    bigiq_onboard_dns_search:
-      - domain.org
-    bigiq_onboard_timezone: America/Los_Angeles
-    bigiq_onboard_license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX
+    f5_server: bigiq-cm01.domain.org
+    f5_password: secret
 
 ## License
 
@@ -118,8 +60,3 @@ Apache
 ## Author Information
 
 This role was created in 2018 by [Tim Rupp](https://github.com/caphrim007).
-
-## Credits
-
-A special thanks to Jeff Geerling ([@geerlingguy](https://github.com/geerlingguy)) for the
-molecule test examples.
