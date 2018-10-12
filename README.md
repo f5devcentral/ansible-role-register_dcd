@@ -38,7 +38,7 @@ it. This credential is required to do that.
 ## Dependencies
 
 * A BIG-IQ that has been onboarded. This can be accomplished in a number of ways, including
-  via the use of the `bigiq_onboard`_ Ansible Galaxy role.
+  via the use of the [bigiq_onboard][1] Ansible Galaxy role.
 * Alternatively, you can set the ``isSystemSetup`` attribute on the BIG-IQ (found at the
   API endpoint ``/mgmt/shared/system/setup``) to ``true``.
 
@@ -115,4 +115,4 @@ Apache
 
 This role was created in 2018 by [Tim Rupp](https://github.com/caphrim007).
 
-.. _bigiq_onboard: https://galaxy.ansible.com/f5devcentral/bigiq_onboard
+[1]: https://galaxy.ansible.com/f5devcentral/bigiq_onboard
