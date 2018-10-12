@@ -41,17 +41,68 @@ None.
 
 ## Example Playbook
 
-    - name: Register DCD to CM BIG-IQ
-      hosts: dcds
+There are two ways that you can use this role due to the variables that you can specify.
+
+The choice of which method is up to you. Consider though that the concurrent method
+will usually be faster. Where-as the serial method is easier for people new to Ansible
+to understand (because it does not take advantage of Ansible's native concurrency).
+
+* Concurrently
+* Serially
+
+Examples of each are shown below.
+
+### Concurrently
+
+In the concurrent setup, take note of the ``hosts`` line in the example Play. By
+specifying the DCD nodes in the host line, you take advantage of Ansible's implicit
+concurrency. Each DCD node will (concurrently) attempt to register itself with the
+CM.
+
+The ``register_dcd_dcd_server`` we provide to the role is the IP address of the DCD
+host.
+
+    - name: Add DCD devices to CM device concurrently
+      hosts: dcd
       vars_files:
         - vars/main.yml
-      roles:
-        - { role: f5devcentral.register_dcd }
+      tasks:
+        - name: Add DCD to CM
+          include_role:
+            name: f5devcentral.register_dcd
+          vars:
+            register_dcd_dcd_server: "{{ ansible_host }}"
+
+### Serially
+
+In the serial setup, take note of the ``hosts`` line in the example Play. The
+``hosts`` line in this example only specifies the CM device. The consequence of
+this is that each DCD node will need to be added by using a loop in Ansible.
+
+No concurrency happens in this example. DCD nodes are added one at a time in the
+loop. 
+
+The ``register_dcd_dcd_server`` is populated by looking up the ``ansible_host``
+variable of the DCD host. DCD hosts are grouped in a ``dcd`` group so that they
+can easily be looped over.
+
+    - name: Add DCD devices to CM device serially
+      hosts: cm
+      vars_files:
+        - vars/main.yml
+      tasks:
+        - name: Add DCD to CM
+          include_role:
+            name: f5devcentral.register_dcd
+          vars:
+            register_dcd_dcd_server: "{{ hostvars[item].ansible_host }}"
+          loop: "{{ groups['dcd'] }}"
 
 *Inside `vars/main.yml`*:
 
-    f5_server: bigiq-cm01.domain.org
-    f5_password: secret
+    register_dcd_cm_server: bigiq-cm01.domain.org
+    register_dcd_cm_password: secret
+    register_dcd_dcd_password: secret
 
 ## License
 
