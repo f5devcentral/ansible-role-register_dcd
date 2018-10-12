@@ -2,13 +2,14 @@
 
 dependency:
   name: galaxy
-  requirements_file: requirements.yml
+  options:
+    role-file: molecule/resources/requirements.yml
 driver:
   name: docker
 lint:
   name: yamllint
   options:
-    config-file: molecule/multi-node-concurrent/yaml-lint.yml
+    config-file: molecule/resources/yaml-lint.yml
 platforms:
   - name: instance-1
     image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
@@ -61,10 +62,7 @@ provisioner:
   inventory:
     group_vars:
       common:
-        register_dcd_cm_user: ${F5_CM_USER:-admin}
         register_dcd_cm_password: ${F5_CM_PASSWORD:-secret}
-        register_dcd_cm_server_port: ${F5_CM_SERVER_PORT:-443}
-        register_dcd_cm_validate_certs: ${F5_CM_VALIDATE_CERTS:-false}
         register_dcd_cm_server: ${F5_CM_DEVICE:-localhost}
         register_dcd_dcd_user: ${F5_DCD_USER:-admin}
         register_dcd_dcd_password: ${F5_DCD_PASSWORD:-secret}
