@@ -26,3 +26,24 @@ register_dcd_dcd_user: admin
 # Therefore, this credential is required to do that
 #
 register_dcd_dcd_password: secret
+
+# The DCD server IP address to add to the CM device
+#
+register_dcd_dcd_server: localhost
+
+# The address the DCD device should listen for events on
+#
+# By default, this value will be the same as the value provided
+# in the register_dcd_dcd_server variable
+#
+register_dcd_dcd_listener: localhost
+
+# List of services to activate for data collection.
+#
+register_dcd_dcd_services:
+  - access
+  - dos
+  - websafe
+  - ipsec
+  - afm
+  - asm
