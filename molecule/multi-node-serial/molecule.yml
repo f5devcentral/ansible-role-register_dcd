@@ -92,7 +92,7 @@ provisioner:
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
 scenario:
-  name: multi-node
+  name: multi-node-serial
 verifier:
   name: testinfra
   lint:
