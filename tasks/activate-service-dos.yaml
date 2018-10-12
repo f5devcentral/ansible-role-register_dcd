@@ -18,20 +18,24 @@
   register: r
   changed_when: r.status in [200, 202]
 
+- name: Set task ID
+  set_fact:
+    task_id: "{{ r.json.id }}"
+
 - name: Wait for DoS Protection service activation to complete
   uri:
-    url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/security-shared/tasks/add-dos-listener/{{ r.json.id }}"
+    url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/security-shared/tasks/add-dos-listener/{{ task_id }}"
     timeout: "{{ register_dcd_cm_timeout }}"
     validate_certs: "{{ register_dcd_cm_validate_certs }}"
     headers:
       X-F5-Auth-Token: "{{ f5_auth_token }}"
-  register: result
-  changed_when: result.status == 200
+  register: r
+  changed_when: r.status == 200
   retries: 120
-  until: result.json.status in ['FINISHED', 'FAILED']
+  until: r.json.status in ['FINISHED', 'FAILED'] or r.status == 404
   delay: 2
 
 - name: Fail if DoS Protection service activation failed
   fail:
-    msg: "DoS Protection service activation failed with: {{ result.json.errorMessage }}"
-  when: result.json.status == 'FAILED'
+    msg: "DoS Protection service activation failed with: {{ r.json.errorMessage }}"
+  when: r.json.status == 'FAILED'
