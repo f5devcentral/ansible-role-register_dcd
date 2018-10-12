@@ -35,6 +35,29 @@ Password of the user used to connect to DCD device. This value is sent to the CM
 during DCD node registration. The CM needs to communicate with the DCD device to register
 it. This credential is required to do that.
 
+    register_dcd_dcd_server: localhost
+
+The IP address of the DCD server to register. This value is required so that the CM device
+will know which DCD to register. Depending on your method for registering DCD devices, you
+may want to simply set this to be the ``ansible_host`` variable of the DCD host.
+
+    register_dcd_dcd_listener: localhost
+
+The IP address that the DCD will listen for events on. By default, this address is the same
+address that is specified in ``register_dcd_dcd_server``.
+
+    register_dcd_dcd_services:
+      - access
+      - dos
+      - websafe
+      - ipsec
+      - afm
+      - asm
+
+List of services that you want activated for the DCD. By default, we activate all of the
+available services. You can override this on a group or host-based level depending on the
+needs of the DCD device.
+
 ## Dependencies
 
 * A BIG-IQ that has been onboarded. This can be accomplished in a number of ways, including
