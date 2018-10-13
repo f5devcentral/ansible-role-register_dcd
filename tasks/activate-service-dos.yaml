@@ -17,6 +17,9 @@
     status_code: 200,202
   register: r
   changed_when: r.status in [200, 202]
+  until: r.status in [200, 202]
+  retries: 120
+  delay: 2
 
 - name: Set task ID
   set_fact:
