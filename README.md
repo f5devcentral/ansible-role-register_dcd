@@ -1,7 +1,7 @@
 # Ansible Role: BIG-IQ Register DCD
 
 Performs a series of steps needed to register a BIG-IQ provisioned as a Data Collection
-Device (DCD) to a BIG-IQ provisioned as a Configuration Management (CM) device.
+Device (DCD) to a BIG-IQ provisioned as a Centralized Management (CM) device.
 
 ## Requirements
 
