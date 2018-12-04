@@ -11,13 +11,13 @@ None.
 
 Available variables are listed below. For their default values, see `defaults/main.yml`:
 
-    register_dcd_cm_server: localhost
-    register_dcd_cm_server_port: 443
-    register_dcd_cm_user: admin
-    register_dcd_cm_password: secret
-    register_dcd_cm_validate_certs: false
-    register_dcd_cm_transport: rest
-    register_dcd_cm_timeout: 120
+    provider_server: localhost
+    provider_server_port: 443
+    provider_user: admin
+    provider_password: secret
+    provider_validate_certs: false
+    provider_transport: rest
+    provider_timeout: 120
 
 Establishes initial connection to your BIG-IQ. These values are substituted into
 your ``provider`` module parameter. These values should be the connection parameters
