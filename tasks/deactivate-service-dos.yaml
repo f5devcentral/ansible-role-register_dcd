@@ -3,8 +3,8 @@
 - name: De-activate DoS Protection service
   uri:
     url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/security-shared/tasks/remove-dos-listener"
-    timeout: "{{ register_dcd_cm_timeout }}"
-    validate_certs: "{{ register_dcd_cm_validate_certs }}"
+    timeout: "{{ register_cm_timeout }}"
+    validate_certs: "{{ register_cm_validate_certs }}"
     method: POST
     body:
       module: dos
@@ -14,30 +14,30 @@
     headers:
       X-F5-Auth-Token: "{{ f5_auth_token }}"
     status_code: 200,202
-  register: r
-  changed_when: r.status in [200, 202]
-  until: r.status in [200, 202]
+  register: dsdos
+  changed_when: dsdos.status in [200, 202]
+  until: dsdos.status in [200, 202]
   retries: 120
   delay: 2
 
 - name: Set task ID
   set_fact:
-    task_id: "{{ r.json.id }}"
+    task_id: "{{ dsdos.json.id }}"
 
 - name: Wait for DoS Protection service de-activation to complete
   uri:
     url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/cm/security-shared/tasks/remove-dos-listener/{{ task_id }}"
-    timeout: "{{ register_dcd_cm_timeout }}"
-    validate_certs: "{{ register_dcd_cm_validate_certs }}"
+    timeout: "{{ register_cm_timeout }}"
+    validate_certs: "{{ register_cm_validate_certs }}"
     headers:
       X-F5-Auth-Token: "{{ f5_auth_token }}"
-  register: r
-  changed_when: r.status == 200
+  register: dsdos1
+  changed_when: dsdos1.status == 200
   retries: 120
-  until: r.json.status in ['FINISHED', 'FAILED'] or r.status == 404
+  until: dsdos1.json.status in ['FINISHED', 'FAILED'] or dsdos1.status == 404
   delay: 2
 
 - name: Fail if DoS Protection service de-activation failed
   fail:
-    msg: "DoS Protection service de-activation failed with: {{ r.json.errorMessage }}"
-  when: r.json.status == 'FAILED'
+    msg: "DoS Protection service de-activation failed with: {{ dsdos1 }}"
+  when: dsdos1.json.status == 'FAILED'
