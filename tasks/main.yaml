@@ -79,3 +79,4 @@
 ### There are multiple tasks that need to be done for each dcd, so we have to put them into a dedicated yml file.
 - include_tasks: register-dcd.yaml
   with_items: "{{ dcd_list }}"
+  
