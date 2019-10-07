@@ -23,30 +23,30 @@ Establishes initial connection to your BIG-IQ. These values are substituted into
 your ``provider`` module parameter. These values should be the connection parameters
 for the **CM BIG-IP** device.
 
-    register_dcd_dcd_user: admin
+    register_dcd_user: admin
     
 Username to use when logging in to the DCD device. This value is sent to the CM device
 during DCD node registration. The CM needs to communicate with the DCD device to register
 it. This credential is required to do that.
 
-    register_dcd_dcd_password: secret
+    register_dcd_password: secret
 
 Password of the user used to connect to DCD device. This value is sent to the CM device
 during DCD node registration. The CM needs to communicate with the DCD device to register
 it. This credential is required to do that.
 
-    register_dcd_dcd_server: localhost
+    register_dcd_server: localhost
 
 The IP address of the DCD server to register. This value is required so that the CM device
 will know which DCD to register. Depending on your method for registering DCD devices, you
 may want to simply set this to be the ``ansible_host`` variable of the DCD host.
 
-    register_dcd_dcd_listener: localhost
+    register_dcd_listener: localhost
 
 The IP address that the DCD will listen for events on. By default, this address is the same
-address that is specified in ``register_dcd_dcd_server``.
+address that is specified in ``register_dcd_server``.
 
-    register_dcd_dcd_services:
+    register_dcd_services:
       - access
       - dos
       - websafe
@@ -85,7 +85,7 @@ specifying the DCD nodes in the host line, you take advantage of Ansible's impli
 concurrency. Each DCD node will (concurrently) attempt to register itself with the
 CM.
 
-The ``register_dcd_dcd_server`` we provide to the role is the IP address of the DCD
+The ``register_dcd_server`` we provide to the role is the IP address of the DCD
 host.
 
     - name: Add DCD devices to CM device concurrently
@@ -97,7 +97,7 @@ host.
           include_role:
             name: f5devcentral.register_dcd
           vars:
-            register_dcd_dcd_server: "{{ ansible_host }}"
+            register_dcd_server: "{{ ansible_host }}"
 
 ### Serially
 
@@ -108,7 +108,7 @@ this is that each DCD node will need to be added by using a loop in Ansible.
 No concurrency happens in this example. DCD nodes are added one at a time in the
 loop. 
 
-The ``register_dcd_dcd_server`` is populated by looking up the ``ansible_host``
+The ``register_dcd_server`` is populated by looking up the ``ansible_host``
 variable of the DCD host. DCD hosts are grouped in a ``dcd`` group so that they
 can easily be looped over.
 
@@ -121,14 +121,14 @@ can easily be looped over.
           include_role:
             name: f5devcentral.register_dcd
           vars:
-            register_dcd_dcd_server: "{{ hostvars[item].ansible_host }}"
+            register_dcd_server: "{{ hostvars[item].ansible_host }}"
           loop: "{{ groups['dcd'] }}"
 
 *Inside `vars/main.yml`*:
 
-    register_dcd_cm_server: bigiq-cm01.domain.org
-    register_dcd_cm_password: secret
-    register_dcd_dcd_password: secret
+    register_cm_server: bigiq-cm01.domain.org
+    register_cm_password: secret
+    register_dcd_password: secret
 
 ## License
 
@@ -136,6 +136,7 @@ Apache
 
 ## Author Information
 
-This role was created in 2018 by [Tim Rupp](https://github.com/caphrim007).
+This role was created in 2018 by [Tim Rupp](https://github.com/caphrim007).<br/>
+This role was modified in 2019 by [Greg Crosby](https://github.com/crosbygw).
 
 [1]: https://galaxy.ansible.com/f5devcentral/bigiq_onboard
