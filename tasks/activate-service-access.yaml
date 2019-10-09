@@ -15,16 +15,16 @@
     headers:
       X-F5-Auth-Token: "{{ f5_auth_token }}"
     status_code: 200,202
-  register: as
-  changed_when: as.status in [200, 202]
-  until: as.status in [200, 202] or 'Only one task can be created at a time' not in as.json.message
+  register: access_service
+  changed_when: access_service.status in [200, 202]
+  until: access_service.status in [200, 202] or 'Only one task can be created at a time' not in access_service.json.message
   retries: 120
   delay: 2
 
 
 - name: Set task ID
   set_fact:
-    task_id: "{{ as.json.id }}"
+    task_id: "{{ access_service.json.id }}"
 
 - name: Wait for Access service activation to complete
   uri:

@@ -32,10 +32,9 @@ register_dcd_password: secret
 # The value will be taken of the host file attribute: "discoveryip" of the DCD. No need to define here. It is defined in register_dcd.yml file.
 
 # The address the DCD device should listen for events on
-#The value will be taken of the host file attribute: "discoveryip" of the DCD. No need to define here
+# The value will be taken of the host file attribute: "discoveryip" of the DCD. No need to define here
 
 # List of services to activate for data collection.
-#
 register_dcd_services:
   - access
   - dos

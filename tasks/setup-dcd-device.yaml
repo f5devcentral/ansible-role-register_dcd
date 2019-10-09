@@ -46,7 +46,6 @@
   delay: 2
 
 
-
 - name: Fail if DCD node did not register
   fail:
     msg: "Node addition failed with: {{ dcdsettle}}"
