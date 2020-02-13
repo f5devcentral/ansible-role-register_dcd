@@ -55,7 +55,6 @@
 - import_tasks: setup-dcd-device.yaml
   when:
    - register_dcd_server not in devices
-   - hostvars[inventory_hostname]['haprimary']
    - ha.json.nodeRole != 'SECONDARY'
 
 - name: Get DCD Device Reference
@@ -71,10 +70,9 @@
   assert:
    that:
     - rdcd.json.totalItems|default(0) == 1
-  when: hostvars[inventory_hostname]['haprimary']
+  when: ha.json.nodeRole != 'SECONDARY'
 
 - name: activate all services on dcd
   include_tasks: activate-all-services.yaml
   when: >
-    hostvars[inventory_hostname]['haprimary'] and
     ha.json.nodeRole != 'SECONDARY'
