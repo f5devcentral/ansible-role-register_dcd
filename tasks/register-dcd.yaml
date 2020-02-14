@@ -32,6 +32,22 @@
     X-F5-Auth-Token: "{{ f5_auth_token }}"
   register: regchk
 
+- name: Get ha status
+  uri:
+   url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/shared/failover-state"
+   timeout: "{{ register_cm_timeout }}"
+   validate_certs: "{{ register_cm_validate_certs }}"
+   headers:
+    X-F5-Auth-Token: "{{ f5_auth_token }}"
+  register: ha
+
+- name: Ensure HA state was recieved
+  fail:
+   msg: "There was problem with getting HA state. Please ensure that BIGIQ system started"
+  when: >
+    ha.json is undefined or
+    ha.json.systemMode is undefined
+
 - name: Get devices from CM
   set_fact:
    devices: "{{ regchk.json | json_query('items[*].address') }}"
@@ -39,7 +55,7 @@
 - import_tasks: setup-dcd-device.yaml
   when:
    - register_dcd_server not in devices
-   - hostvars[inventory_hostname]['haprimary']
+   - ha.json.nodeRole != 'SECONDARY'
 
 - name: Get DCD Device Reference
   uri:
@@ -54,8 +70,9 @@
   assert:
    that:
     - rdcd.json.totalItems|default(0) == 1
-  when: hostvars[inventory_hostname]['haprimary']
+  when: ha.json.nodeRole != 'SECONDARY'
 
 - name: activate all services on dcd
   include_tasks: activate-all-services.yaml
-  when: hostvars[inventory_hostname]['haprimary']
+  when: >
+    ha.json.nodeRole != 'SECONDARY'
