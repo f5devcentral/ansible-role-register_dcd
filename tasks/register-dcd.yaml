@@ -59,7 +59,9 @@
 
 - name: Get DCD Device Reference
   uri:
-   url: "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/shared/resolver/device-groups/cm-esmgmt-logging-group/devices/?$select=selfLink,properties&$filter=address+eq+'{{ register_dcd_server }}'"
+   url: |
+     "https://{{ provider.server }}:{{ provider.server_port }}/mgmt/shared/resolver/device-groups/cm-esmgmt-logging-group/
+     devices/?$select=selfLink,properties&$filter=address+eq+'{{ register_dcd_server }}'"
    timeout: "{{ register_cm_timeout }}"
    validate_certs: "{{ register_cm_validate_certs }}"
    headers:

@@ -8,6 +8,10 @@ galaxy_info:
   company: F5 Networks
   license: Apache
   min_ansible_version: 2.7
+  platforms:
+    - name: TMOS
+      versions:
+        - all
   galaxy_tags:
     - f5
     - networking

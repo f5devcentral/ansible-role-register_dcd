@@ -40,5 +40,5 @@
 
 - name: Fail if IPsec service activation failed
   fail:
-    msg: "IPsec service activation failed with: {{ asips1}}"
+    msg: "IPsec service activation failed with: {{ asips1 }}"
   when: asips1.json.status == 'FAILED'
